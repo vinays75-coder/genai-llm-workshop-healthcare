@@ -1,3 +1,4 @@
+# GenAI / LLM Workshop Notebook - Overview
 # GenAI / LLM Workshop Notebook — Setup Instructions
 
 ---
