@@ -1,4 +1,10 @@
 # GenAI / LLM Workshop Notebook - Overview
+This highly visual, hands-on Python workshop transforms some of the most complex and critical concepts behind Generative AI into clear, practical experiences. Using approachable healthcare scenarios, participants will explore how an LLM breaks text into tokens, represents meaning with embeddings, uses attention to understand context, predicts the next token, learns from examples, and grounds responses through Retrieval-Augmented Generation (RAG).
+
+Participants will run interactive demonstrations covering tokens, embeddings, cosine similarity, model parameters, attention, next-token prediction, training and loss, RAG, cost optimization, AI agents, MCP, and agent-to-agent communication. No paid AI service, API key, patient data, or advanced AI background is required everything runs locally on the participants laptop.
+
+This is not a slide-only introduction. Participants leave with a runnable notebook, practical intuition about how modern LLMs operate, and a stronger understanding of the privacy, safety, grounding, and human-review controls required for responsible AI in healthcare.
+
 # GenAI / LLM Workshop Notebook — Setup Instructions
 
 ---
