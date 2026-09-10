@@ -1,0 +1,30 @@
+[
+  {
+    "id": "RECORDS-01",
+    "question": "Where do I request my medical records?",
+    "aliases": ["How do I request my records?", "Where do records requests go?"],
+    "keywords": ["records", "record"],
+    "answer": "Records requests go to the Health Information Management team."
+  },
+  {
+    "id": "HOURS-01",
+    "question": "What are the clinic hours?",
+    "aliases": ["When is the clinic open?", "What time does the clinic open?"],
+    "keywords": ["hours", "open", "closing"],
+    "answer": "The fictional clinic is open Monday through Friday, 9 AM to 5 PM."
+  },
+  {
+    "id": "APPOINTMENTS-01",
+    "question": "How do I reschedule my appointment?",
+    "aliases": ["How can I change my appointment?"],
+    "keywords": ["appointment", "reschedule", "appointments"],
+    "answer": "Contact the clinic reception team during clinic hours to request an appointment change."
+  },
+  {
+    "id": "BILLING-01",
+    "question": "Who can help with a billing question?",
+    "aliases": ["Where do billing questions go?", "Who do I contact about my bill?"],
+    "keywords": ["billing", "bill"],
+    "answer": "Billing questions go to Patient Financial Services."
+  }
+]

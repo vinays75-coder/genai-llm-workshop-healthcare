@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clinic Information Assistant</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#163749;background:#eef5f7;line-height:1.6}
+*{box-sizing:border-box}body{margin:0}main{max-width:1000px;margin:auto;padding:35px 24px}
+.tag{font-size:13px;letter-spacing:.09em;font-weight:750;text-transform:uppercase;color:#096d69}
+h1{font-size:clamp(28px,4vw,42px);letter-spacing:-.04em;line-height:1.2;margin:10px 0}h2{font-size:22px;margin:0 0 14px}
+.subtitle{color:#486372;font-size:18px}.notice{padding:13px 18px;background:#fff5df;border-left:4px solid #ca932c;border-radius:8px;margin:22px 0}
+.card{background:white;border:1px solid #d4e3e8;border-radius:18px;padding:25px;margin:18px 0;box-shadow:0 6px 20px #123a4907}
+label{font-weight:650;display:block;margin-bottom:8px}input{width:100%;font:inherit;padding:14px;border:1px solid #8baab7;border-radius:10px}
+button{font:inherit;cursor:pointer;border:1px solid #b9d1d8;background:#f4f9fa;color:#163749;border-radius:9px;padding:10px 16px}
+button:hover{background:#e3f2f4}button:focus-visible,input:focus-visible{outline:3px solid #358dcd;outline-offset:3px}
+button:disabled{cursor:wait;opacity:.65}.primary{background:#087a77;color:white;border:0;font-weight:700}.primary:hover{background:#075d5b}
+.row{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}.small{font-size:14px;color:#526c77}.chips button{font-size:14px;padding:7px 12px}
+.answer{font-size:21px;line-height:1.55}.source{border-left:4px solid #46a79e;padding:8px 16px;margin:18px 0;background:#f4faf9}
+.source p{margin:5px 0}.badge{font-size:13px;background:#e2f3ed;color:#145848;border-radius:20px;padding:5px 12px;display:inline-block;font-weight:700}
+#result-title{margin-top:10px}details summary{cursor:pointer;font-weight:650}details p{margin:8px 0}footer{font-size:14px;color:#526c77;padding:10px 0 25px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body><main>
+<div class="tag">Healthcare workshop · Runs on your laptop</div>
+<h1>Clinic Information Assistant</h1>
+<p class="subtitle">Ask a question. Check the source. Recognize what is missing.</p>
+<div class="notice"><strong>Fictional classroom demo.</strong> Use made-up questions only—no patient information. This app searches prepared FAQs; it does not use AI or provide medical advice.</div>
+<section class="card" aria-labelledby="ask-title">
+<h2 id="ask-title">What would you like to find?</h2>
+<form id="ask-form"><label for="question">Your clinic question</label>
+<input id="question" maxlength="300" required autocomplete="off" placeholder="Where do I request my medical records?">
+<div class="row"><button class="primary" id="ask-button" type="submit">Ask the assistant</button><span class="small">Answers come from the fictional FAQ file.</span></div></form>
+<p class="small">Or try a workshop question:</p><div class="row chips" id="suggestions"></div>
+<p id="error" role="alert" hidden></p>
+</section>
+<section class="card" id="result" aria-live="polite" hidden>
+<span class="badge" id="status"></span><h2 id="result-title">Result</h2>
+<p id="message"></p><div id="sources"></div>
+<div class="row"><button id="helpful" type="button">Helpful</button><button id="review" type="button">Needs review</button><span id="feedback" class="small" role="status"></span></div>
+<p class="small">Feedback saves only a source ID, rating, and timestamp on this laptop. Question text is not saved by the app.</p>
+</section>
+<details class="card"><summary>Explore the fictional source library</summary><div id="library"></div></details>
+<details class="card"><summary>Your 15-minute challenge</summary>
+<ol><li>Ask where to request medical records. Check the source.</li><li>Ask how much parking costs. Notice the missing information.</li><li>Ask “How much do medical records cost?” A related policy does not establish a fee.</li><li>Open <strong>faqs.json</strong> in your editor. Change the fictional closing time from <strong>5 PM</strong> to <strong>6 PM</strong> and save.</li><li>Ask “What are the clinic hours?” again. Your data edit changes the answer.</li><li>Click <strong>Helpful</strong>, then find the new <strong>feedback.jsonl</strong> file.</li></ol>
+</details>
+<footer>Model-free GenAI workflow simulation · No API keys · No external requests by this app<br>Frontend: this page · Backend: Python · Storage: local FAQ and feedback files</footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let sourceId = 'NO_MATCH';
+async function request(path, data) {
+ const response = await fetch(path, data === undefined ? {} : {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+ const result = await response.json();
+ if (!response.ok) throw new Error(result.error || 'Request failed.');
+ return result;
+}
+function textElement(tag, text, className) {
+ const node = document.createElement(tag); node.textContent = text;
+ if (className) node.className = className; return node;
+}
+async function loadLibrary() {
+ const {faqs} = await request('/api/faqs'); $('library').replaceChildren();
+ for (const faq of faqs) {
+  const box = textElement('div','', 'source');
+  box.append(textElement('strong',faq.id + ' · ' + faq.question),textElement('p',faq.answer));
+  $('library').append(box);
+ }
+}
+async function ask() {
+ const question = $('question').value.trim(); if (!question) return;
+ $('ask-button').disabled = true; $('error').hidden = true; $('result').hidden = true;
+ try {
+  const data = await request('/api/ask',{question});
+  $('status').textContent = {found:'Matching FAQ',related:'Related information only',unknown:'Information not found'}[data.status];
+  $('message').textContent = data.message; $('sources').replaceChildren();
+  sourceId = data.sources.length ? data.sources[0].id : 'NO_MATCH';
+  for (const faq of data.sources) {
+   const box = textElement('div','', 'source');
+   box.append(textElement('strong',faq.question),textElement('p',faq.answer,'answer'),textElement('p','Source: ' + faq.id + ' · Fictional clinic FAQ','small'));
+   $('sources').append(box);
+  }
+  $('feedback').textContent = ''; $('helpful').disabled = false; $('review').disabled = false;
+  $('result').hidden = false;
+  await loadLibrary();
+ } catch (error) {
+  $('error').textContent = error.message === 'Failed to fetch' ? 'Cannot reach the app. Check that Python is still running in your terminal.' : error.message;
+  $('error').hidden = false;
+ } finally { $('ask-button').disabled = false; }
+}
+$('ask-form').addEventListener('submit', event => {event.preventDefault();ask();});
+for (const question of ['Where do I request my medical records?','What are the clinic hours?','How much does parking cost?','How much do medical records cost?']) {
+ const button = textElement('button',question);button.type='button';
+ button.onclick = () => {if (!$('ask-button').disabled) {$('question').value=question;ask();}};
+ $('suggestions').append(button);
+}
+async function feedback(rating) {
+ $('helpful').disabled = true; $('review').disabled = true;
+ try {const data = await request('/api/feedback',{source_id:sourceId,rating});$('feedback').textContent=data.message;}
+ catch(error) {$('feedback').textContent=error.message;$('helpful').disabled=false;$('review').disabled=false;}
+}
+$('helpful').onclick=()=>feedback('helpful');$('review').onclick=()=>feedback('needs_review');
+loadLibrary().catch(error=>{$('error').textContent=error.message;$('error').hidden=false;});
+</script></body></html>
