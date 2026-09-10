@@ -118,7 +118,7 @@ Click:
 How much do medical records cost?
 ```
 
-Expected result: **Related information only.** It shows the records-routing FAQ but does not supply a fee.
+Expected result: **Information not found.** The records-routing FAQ does not explain fees, so it is not displayed as an answer.
 
 Ask: “Does knowing which team handles requests tell us how much a request costs?”
 
@@ -147,7 +147,7 @@ Say: “You changed the data your application uses, and the visible result chang
 2. Find the newly created **feedback.jsonl** file in the app folder.
 3. Open it in your editor. Each line records the time, a source ID, and your rating.
 
-The app does not save the question text. If multiple related sources are shown, feedback is associated with the first displayed source. Do not enter real patient information even though the demo runs locally.
+The app does not save the question text. Do not enter real patient information even though the demo runs locally.
 
 Say: “Your button click went from the browser to Python and was saved in a local file.”
 
@@ -166,14 +166,14 @@ Return to the terminal and press **Ctrl + C** to stop the application. On Mac th
 ```text
 Browser: participant enters a question
                 ↓
-Python: compares it with prepared questions and keywords
+Python: compares it with prepared questions and alternative phrasings
                 ↓
 Local FAQ file: supplies the exact source wording
                 ↓
-Browser: displays matching, related, or missing information
+Browser: displays a matching answer or reports missing information
 ```
 
-A known question or alias, ignoring case and punctuation, receives its saved answer. Otherwise, keyword matching can show related FAQs. If no keyword matches, the application reports that it did not find information. This simple search can miss relevant answers; it does not understand language.
+A known question or alias (a saved alternative phrasing), ignoring case and punctuation, receives its saved answer. Other questions receive **Information not found**, with no unrelated FAQ displayed. Sharing a word such as “records” is not enough to establish that a policy answers a question about cost. This intentionally conservative matching can miss valid paraphrases; it does not understand language. To support another wording, add it to the appropriate FAQ’s `aliases` list only if that FAQ actually answers it.
 
 There is no text generation, semantic embedding, or real RAG model here. An LLM-based version could draft from retrieved passages, but would still need source checks and appropriate safeguards. This workshop teaches the application structure and review workflow without model setup.
 
@@ -187,6 +187,7 @@ There is no text generation, semantic embedding, or real RAG model here. An LLM-
 | `START_WINDOWS.bat` | Optional Windows launcher. |
 | `README.md` | These instructions and the teaching script. |
 | `.gitignore` | Excludes generated feedback and Python cache from Git. |
+| `test_app.py` | Optional regression tests for matching; not needed to run the app. |
 
 `feedback.jsonl` is created after the first feedback click. It is not included in the distributed ZIP.
 

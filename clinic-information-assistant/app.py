@@ -26,9 +26,9 @@ def load_faqs():
         for key in ('id', 'question', 'answer'):
             if not isinstance(item.get(key), str) or not item[key].strip():
                 raise ValueError('Each FAQ needs an id, question, and answer.')
-        for key in ('aliases', 'keywords'):
+        for key in ('aliases',):
             if not isinstance(item.get(key), list) or not all(isinstance(x, str) for x in item[key]):
-                raise ValueError('Each FAQ needs aliases and keywords lists.')
+                raise ValueError('Each FAQ needs an aliases list.')
         if item['id'] in seen:
             raise ValueError('FAQ IDs must be unique.')
         seen.add(item['id'])
@@ -36,17 +36,11 @@ def load_faqs():
 
 
 def find_answer(question, faqs):
-    """Exact known question -> answer; keyword overlap -> related sources only."""
+    """Return an answer only for a known question or an explicit alternative phrasing."""
     query = normalize(question)
     for faq in faqs:
         if query in [normalize(x) for x in [faq['question']] + faq['aliases']]:
             return {'status': 'found', 'message': 'A matching FAQ was found.', 'sources': [faq]}
-    words = set(query.split())
-    related = [faq for faq in faqs if any(
-        set(normalize(keyword).split()).issubset(words) and normalize(keyword)
-        for keyword in faq['keywords'])]
-    if related:
-        return {'status': 'related', 'message': 'No exact question match. These related FAQs may not answer your question. Check the source; do not assume missing details.', 'sources': related[:3]}
     return {'status': 'unknown', 'message': 'I could not find that information in the supplied clinic FAQs. Please check an approved source or ask the appropriate clinic team.', 'sources': []}
 
 

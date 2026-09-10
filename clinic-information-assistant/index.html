@@ -30,7 +30,7 @@ button:disabled{cursor:wait;opacity:.65}.primary{background:#087a77;color:white;
 <h2 id="ask-title">What would you like to find?</h2>
 <form id="ask-form"><label for="question">Your clinic question</label>
 <input id="question" maxlength="300" required autocomplete="off" placeholder="Where do I request my medical records?">
-<div class="row"><button class="primary" id="ask-button" type="submit">Ask the assistant</button><span class="small">Answers come from the fictional FAQ file.</span></div></form>
+<div class="row"><button class="primary" id="ask-button" type="submit">Ask the assistant</button><span class="small">Matches saved questions and alternative phrasings in the fictional FAQ file.</span></div></form>
 <p class="small">Or try a workshop question:</p><div class="row chips" id="suggestions"></div>
 <p id="error" role="alert" hidden></p>
 </section>
@@ -42,7 +42,7 @@ button:disabled{cursor:wait;opacity:.65}.primary{background:#087a77;color:white;
 </section>
 <details class="card"><summary>Explore the fictional source library</summary><div id="library"></div></details>
 <details class="card"><summary>Your 15-minute challenge</summary>
-<ol><li>Ask where to request medical records. Check the source.</li><li>Ask how much parking costs. Notice the missing information.</li><li>Ask “How much do medical records cost?” A related policy does not establish a fee.</li><li>Open <strong>faqs.json</strong> in your editor. Change the fictional closing time from <strong>5 PM</strong> to <strong>6 PM</strong> and save.</li><li>Ask “What are the clinic hours?” again. Your data edit changes the answer.</li><li>Click <strong>Helpful</strong>, then find the new <strong>feedback.jsonl</strong> file.</li></ol>
+<ol><li>Ask where to request medical records. Check the source.</li><li>Ask how much parking costs. Notice the missing information.</li><li>Ask “How much do medical records cost?” Notice that the app does not substitute records-request instructions for missing fee information.</li><li>Open <strong>faqs.json</strong> in your editor. Change the fictional closing time from <strong>5 PM</strong> to <strong>6 PM</strong> and save.</li><li>Ask “What are the clinic hours?” again. Your data edit changes the answer.</li><li>Click <strong>Helpful</strong>, then find the new <strong>feedback.jsonl</strong> file.</li></ol>
 </details>
 <footer>Model-free GenAI workflow simulation · No API keys · No external requests by this app<br>Frontend: this page · Backend: Python · Storage: local FAQ and feedback files</footer>
 </main>
@@ -72,7 +72,7 @@ async function ask() {
  $('ask-button').disabled = true; $('error').hidden = true; $('result').hidden = true;
  try {
   const data = await request('/api/ask',{question});
-  $('status').textContent = {found:'Matching FAQ',related:'Related information only',unknown:'Information not found'}[data.status];
+  $('status').textContent = {found:'Matching FAQ',unknown:'Information not found'}[data.status];
   $('message').textContent = data.message; $('sources').replaceChildren();
   sourceId = data.sources.length ? data.sources[0].id : 'NO_MATCH';
   for (const faq of data.sources) {
